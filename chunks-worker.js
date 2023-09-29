@@ -4,7 +4,8 @@ import { parentPort, workerData } from 'node:worker_threads'
 
 console.time(workerData.id)
 
-const fileStream = createReadStream('file.csv')
+// CSV files need to end with a new line
+const fileStream = createReadStream('file.csv', { highWaterMark: 64 * 1024 })
 
 let unprocessed = ''
 fileStream.on('data', (chunk) => {
@@ -20,6 +21,8 @@ fileStream.on('data', (chunk) => {
 
   if (chunkString[chunkString.length - 1] !== '\n') {
     unprocessed = chunkString.slice(start)
+  } else {
+    unprocessed = ''
   }
 })
 

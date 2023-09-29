@@ -9,6 +9,7 @@ import { Worker } from 'node:worker_threads'
 
 // processLineByLine(0)
 // processByChunks(0)
+processByChunksWorker(0)
 
 // Promise.all(new Array(20).fill(null).map((_, index) => processByChunks(index)))
 // Promise.all(new Array(20).fill(null).map((_, index) => processByChunksWorker(index)))
@@ -44,7 +45,9 @@ export async function processLineByLine(id) {
 
 export async function processByChunks(id) {
   console.time(id)
-  const fileStream = createReadStream('file.csv')
+
+  // CSV files need to end with a new line
+  const fileStream = createReadStream('file.csv', { highWaterMark: 64 * 1024 })
 
   let unprocessed = ''
   fileStream.on('data', (chunk) => {
@@ -60,6 +63,8 @@ export async function processByChunks(id) {
 
     if (chunkString[chunkString.length - 1] !== '\n') {
       unprocessed = chunkString.slice(start)
+    } else {
+      unprocessed = ''
     }
   })
 

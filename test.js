@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert'
-import { processByChunks, processByChunksWorker, processLineByLine } from './script.js'
+import { processByChunks, processLineByLine } from './shared.js'
+import { processByChunksWorker } from './script.js'
 
 test('process by lines', async () => {
   const result = await processLineByLine(0)
